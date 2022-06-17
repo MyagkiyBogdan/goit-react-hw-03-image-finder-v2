@@ -24,12 +24,8 @@ export class App extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchInfo !== this.state.searchInfo) {
-      this.setState({ images: [], page: 1, totalHits: 0 });
-      this.fetchImages();
-    }
     if (
-      prevState.searchInfo === this.state.searchInfo &&
+      prevState.searchInfo !== this.state.searchInfo ||
       prevState.page !== this.state.page
     ) {
       this.fetchImages();
@@ -55,7 +51,12 @@ export class App extends Component {
 
   // for SearcBar component
   handleFormSubmit = searchInfo => {
-    this.setState({ searchInfo: searchInfo });
+    this.setState({
+      images: [],
+      page: 1,
+      searchInfo: searchInfo,
+      totalHits: 0,
+    });
   };
 
   // for Button component
