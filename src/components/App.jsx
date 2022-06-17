@@ -20,11 +20,12 @@ export class App extends Component {
     error: null,
     status: 'idle',
     page: 1,
+    totalHits: 0,
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.searchInfo !== this.state.searchInfo) {
-      this.setState({ images: [], page: 1 });
+      this.setState({ images: [], page: 1, totalHits: 0 });
       this.fetchImages();
     }
     if (
@@ -45,6 +46,7 @@ export class App extends Component {
           return {
             images: [...prevState.images, ...images.hits],
             status: 'resolved',
+            totalHits: images.totalHits,
           };
         })
       )
@@ -53,7 +55,7 @@ export class App extends Component {
 
   // for SearcBar component
   handleFormSubmit = searchInfo => {
-    this.setState({ searchInfo: searchInfo, page: 1 });
+    this.setState({ searchInfo: searchInfo });
   };
 
   // for Button component
@@ -64,7 +66,7 @@ export class App extends Component {
   };
 
   render() {
-    const { searchInfo, images, status, error } = this.state;
+    const { searchInfo, images, status, error, totalHits } = this.state;
     return (
       <div className={styles.App}>
         <Searchbar onSubmit={this.handleFormSubmit} />
@@ -81,7 +83,9 @@ export class App extends Component {
         {status === 'resolved' && images.length > 0 && (
           <ImageGallery images={images} />
         )}
-        {images.length > 0 && <Button onClick={this.handleIncreasePage} />}
+        {totalHits > images.length && status !== 'pending' && (
+          <Button onClick={this.handleIncreasePage} />
+        )}
         {status === 'pending' && <Loader />}
 
         <ToastContainer autoClose={2500} />
