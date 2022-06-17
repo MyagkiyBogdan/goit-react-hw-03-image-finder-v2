@@ -23,12 +23,26 @@ export class App extends Component {
     totalHits: 0,
   };
 
+  smoothScrolling() {
+    const { height: cardHeight } = document
+      .querySelector('#root')
+      .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 0.425,
+      behavior: 'smooth',
+    });
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (
       prevState.searchInfo !== this.state.searchInfo ||
       prevState.page !== this.state.page
     ) {
       this.fetchImages();
+      if (this.state.page > 1) {
+        setTimeout(() => this.smoothScrolling(), 250);
+      }
     }
   }
 
@@ -51,11 +65,15 @@ export class App extends Component {
 
   // for SearcBar component
   handleFormSubmit = searchInfo => {
-    this.setState({
-      images: [],
-      page: 1,
-      searchInfo: searchInfo,
-      totalHits: 0,
+    this.setState(prevState => {
+      if (prevState.searchInfo !== searchInfo) {
+        return {
+          images: [],
+          page: 1,
+          searchInfo: searchInfo,
+          totalHits: 0,
+        };
+      }
     });
   };
 
@@ -81,9 +99,7 @@ export class App extends Component {
         {status === 'resolved' && images.length === 0 && (
           <p className={styles.text}>No images on {searchInfo} topic</p>
         )}
-        {status === 'resolved' && images.length > 0 && (
-          <ImageGallery images={images} />
-        )}
+        {images.length > 0 && <ImageGallery images={images} />}
         {totalHits > images.length && status !== 'pending' && (
           <Button onClick={this.handleIncreasePage} />
         )}
