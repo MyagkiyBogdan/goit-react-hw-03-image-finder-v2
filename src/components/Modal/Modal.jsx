@@ -42,8 +42,8 @@ class Modal extends Component {
 }
 
 Modal.propTypes = {
-  src: PropTypes.string,
-  alt: PropTypes.string,
+  src: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
   toggleModal: PropTypes.func.isRequired,
 };
 
